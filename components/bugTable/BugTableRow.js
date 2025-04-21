@@ -114,12 +114,12 @@ export default function BugTableRow({ bug, onEdit, onDelete }) {
                         <TableCell>
                             <Typography
                                 noWrap
-                                title={bug.fields.Description} // Tooltip to show the full description on hover
+                                title={bug.fields.Description}
                                 sx={{
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
-                                    maxWidth: '200px', // Adjust the width as needed
+                                    maxWidth: '20vw',
                                 }}
                             >
                                 {bug.fields.Description}
