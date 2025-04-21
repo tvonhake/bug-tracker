@@ -91,7 +91,7 @@ export default function BugTable() {
     };
 
     const handleSort = (field, direction = sortDirection, list = bugs) => {
-        const newDirection = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
+        const newDirection = direction || (sortField === field && sortDirection === 'asc' ? 'desc' : 'asc');
         setSortField(field);
         setSortDirection(newDirection);
 
