@@ -6,7 +6,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 
-export default function BugTableRow({ bug, onEdit, onDelete }) {
+export default function BugTableRow({ bug, onEdit, onDelete, onRowClick }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editedBug, setEditedBug] = useState({ ...bug.fields });
 
@@ -55,7 +55,14 @@ export default function BugTableRow({ bug, onEdit, onDelete }) {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <TableRow>
+            <TableRow
+                onClick={(e) => {
+                    if (!e.target.closest('.MuiIconButton-root')) {
+                        onRowClick();
+                    }
+                }}
+                style={{ cursor: 'pointer' }}
+            >
                 {isEditing ? (
                     <>
                         <TableCell>{bug.fields['Bug ID']}</TableCell>
