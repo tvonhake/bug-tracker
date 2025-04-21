@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TableRow, TableCell, IconButton, TextField, Select, MenuItem } from '@mui/material';
+import { TableRow, TableCell, IconButton, TextField, Select, MenuItem, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
@@ -58,13 +58,7 @@ export default function BugTableRow({ bug, onEdit, onDelete }) {
             <TableRow>
                 {isEditing ? (
                     <>
-                        <TableCell>
-                            <TextField
-                                value={editedBug['Bug ID']}
-                                disabled
-                                fullWidth
-                            />
-                        </TableCell>
+                        <TableCell>{bug.fields['Bug ID']}</TableCell>
                         <TableCell>
                             <TextField
                                 value={editedBug.Title}
@@ -117,7 +111,20 @@ export default function BugTableRow({ bug, onEdit, onDelete }) {
                     <>
                         <TableCell>{bug.fields['Bug ID']}</TableCell>
                         <TableCell>{bug.fields.Title}</TableCell>
-                        <TableCell>{bug.fields.Description}</TableCell>
+                        <TableCell>
+                            <Typography
+                                noWrap
+                                title={bug.fields.Description}
+                                sx={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    maxWidth: '20vw',
+                                }}
+                            >
+                                {bug.fields.Description}
+                            </Typography>
+                        </TableCell>
                         <TableCell>{bug.fields['Reported Date']}</TableCell>
                         <TableCell>{bug.fields.Status}</TableCell>
                         <TableCell>{bug.fields.Severity}</TableCell>

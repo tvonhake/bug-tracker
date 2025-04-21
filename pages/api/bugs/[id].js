@@ -1,4 +1,5 @@
 import { table } from '../airtable';
+import axios from 'axios';
 
 export default async function handler(req, res) {
     const { id } = req.query;
@@ -13,8 +14,28 @@ export default async function handler(req, res) {
             if (!fields) {
                 return res.status(400).json({ error: 'Fields are required for updating.' });
             }
-            const updatedRecord = await table.update(id, fields);
-            return res.status(200).json({ record: updatedRecord });
+
+            const airtableApiUrl = `https://api.airtable.com/v0/appiN5YQubFNexMWb/Bugs`;
+            const airtableApiKey = process.env.AIRTABLE_API_KEY;
+            const response = await axios.patch(
+                airtableApiUrl,
+                {
+                    records: [
+                        {
+                            id: id,
+                            fields: fields,
+                        },
+                    ],
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${airtableApiKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            return res.status(200).json({ record: response.data.records[0] });
         }
 
         if (req.method === 'DELETE') {
