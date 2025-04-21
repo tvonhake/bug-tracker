@@ -1,4 +1,4 @@
-import { Table, TableHead, TableBody, TableRow, TableCell, IconButton, TextField } from '@mui/material';
+import { Typography, Table, TableHead, TableBody, TableRow, TableCell, IconButton, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
@@ -69,6 +69,7 @@ export default function BugTable() {
                 fullWidth
                 margin="normal"
             />
+            <Typography variant="h5" gutterBottom>Bugs</Typography>
             <Table>
                 <TableHead>
                     <TableRow>
