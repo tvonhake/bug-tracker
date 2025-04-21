@@ -70,7 +70,7 @@ This is a Bug Tracking Application built using Next.js and Airtable. The applica
 I've deployed this app using Vercel, but it can be deployed using any other tool you prefer.
 
 ## Notes
-To prevent going over time, I prioritized functionality: making sure that all CRUD operations can be performed, that search and sorting works, and that API calls work. To meet the time requirements I chose to forego complex styling and niceties like caching data across sessions.
+To prevent going over time, I prioritized functionality: making sure that all CRUD operations can be performed, that search and sorting works, and that API calls work. To meet the time requirements I chose to forego complex styling and niceties like caching, loading spinners/skeletons, etc.
 
 ## Learn More
 - [Next.js Documentation](https://nextjs.org/docs)  
