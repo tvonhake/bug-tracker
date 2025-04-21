@@ -1,4 +1,4 @@
-import { Typography, Table, TableHead, TableBody, TableRow, TableCell, IconButton, TextField, InputAdornment, Select, MenuItem, Button } from '@mui/material';
+import { Typography, Table, TableHead, TableBody, TableRow, TableCell, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -14,8 +14,8 @@ export default function BugTable() {
     const [sortedBugs, setSortedBugs] = useState([]);
     const [search, setSearch] = useState('');
     const [showAddFields, setShowAddFields] = useState(false);
-    const [newBug, setNewBug] = useState({ Title: '', Status: '', Severity: '' });
-    const [sortField, setSortField] = useState('Title');
+    const [newBug, setNewBug] = useState({ 'Bug ID': '', Title: '', Description: '', 'Reported Date': '', Status: '', Severity: '' });
+    const [sortField, setSortField] = useState('Bug ID');
     const [sortDirection, setSortDirection] = useState('asc');
 
     useEffect(() => {
@@ -28,19 +28,19 @@ export default function BugTable() {
             const fetchedBugs = res.data.records;
 
             setBugs(fetchedBugs);
-            setSortedBugs(fetchedBugs);
+            handleSort('Bug ID', 'asc', fetchedBugs);
         } catch (err) {
             console.error('Error fetching bugs:', err);
         }
     };
 
-    const handleAdd = async () => {
+    const handleAdd = async (bugToAdd) => {
         try {
-            const bugToAdd = { fields: { Title: newBug.Title, Status: newBug.Status, Severity: newBug.Severity } };
-            const res = await axios.post('/api/bugs', bugToAdd);
+            const bugToSend = { fields: { ...bugToAdd } };
+            const res = await axios.post('/api/bugs', bugToSend);
             const updatedBugs = [...bugs, res.data.record];
             setBugs(updatedBugs);
-            setSortedBugs(updatedBugs);
+            handleSort(sortField, sortDirection, updatedBugs);
         } catch (err) {
             console.error('Error adding bug:', err);
         }
@@ -55,7 +55,7 @@ export default function BugTable() {
             const res = await axios.patch(`/api/bugs/${id}`, { fields: updatedBug.fields });
             const updatedBugs = bugs.map((bug) => (bug.id === id ? res.data.record : bug));
             setBugs(updatedBugs);
-            setSortedBugs(updatedBugs);
+            handleSort(sortField, sortDirection, updatedBugs);
         } catch (err) {
             console.error('Error editing bug:', err);
         }
@@ -66,7 +66,7 @@ export default function BugTable() {
             const updatedBugs = bugs.filter((bug) => bug.id !== id);
             await axios.delete(`/api/bugs/${id}`);
             setBugs(updatedBugs);
-            setSortedBugs(updatedBugs);
+            handleSort(sortField, sortDirection, updatedBugs);
         } catch (err) {
             console.error('Error deleting bug:', err);
         }
@@ -90,21 +90,29 @@ export default function BugTable() {
         setSortedBugs(bugs);
     };
 
-    const handleSort = (field) => {
-        const direction = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
+    const handleSort = (field, direction = sortDirection, list = bugs) => {
+        const newDirection = direction || (sortField === field && sortDirection === 'asc' ? 'desc' : 'asc');
         setSortField(field);
-        setSortDirection(direction);
+        setSortDirection(newDirection);
 
         const severityOrder = ['Low', 'Medium', 'High', 'Critical'];
 
-        const sorted = [...bugs].sort((a, b) => {
-            if (field === 'Severity') {
+        const sorted = [...list].sort((a, b) => {
+            if (field === 'Bug ID') {
+                const aId = parseInt(a.fields['Bug ID'].replace('BUG-', ''), 10);
+                const bId = parseInt(b.fields['Bug ID'].replace('BUG-', ''), 10);
+                return newDirection === 'asc' ? aId - bId : bId - aId;
+            } else if (field === 'Severity') {
                 const aIndex = severityOrder.indexOf(a.fields.Severity);
                 const bIndex = severityOrder.indexOf(b.fields.Severity);
-                return direction === 'asc' ? aIndex - bIndex : bIndex - aIndex;
+                return newDirection === 'asc' ? aIndex - bIndex : bIndex - aIndex;
+            } else if (field === 'Reported Date') {
+                const dateA = new Date(a.fields['Reported Date']);
+                const dateB = new Date(b.fields['Reported Date']);
+                return newDirection === 'asc' ? dateA - dateB : dateB - dateA;
             } else {
-                if (a.fields[field] < b.fields[field]) return direction === 'asc' ? -1 : 1;
-                if (a.fields[field] > b.fields[field]) return direction === 'asc' ? 1 : -1;
+                if (a.fields[field] < b.fields[field]) return newDirection === 'asc' ? -1 : 1;
+                if (a.fields[field] > b.fields[field]) return newDirection === 'asc' ? 1 : -1;
                 return 0;
             }
         });
@@ -130,14 +138,41 @@ export default function BugTable() {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell onClick={() => handleSort('Title')} style={{ cursor: 'pointer' }}>
-                            Title {getSortIcon('Title')}
+                        <TableCell onClick={() => handleSort('Bug ID')} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <span>Bug ID</span>
+                                {getSortIcon('Bug ID')}
+                            </div>
                         </TableCell>
-                        <TableCell onClick={() => handleSort('Status')} style={{ cursor: 'pointer' }}>
-                            Status {getSortIcon('Status')}
+                        <TableCell onClick={() => handleSort('Title')} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <span>Title</span>
+                                {getSortIcon('Title')}
+                            </div>
                         </TableCell>
-                        <TableCell onClick={() => handleSort('Severity')} style={{ cursor: 'pointer' }}>
-                            Severity {getSortIcon('Severity')}
+                        <TableCell onClick={() => handleSort('Description')} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <span>Description</span>
+                                {getSortIcon('Description')}
+                            </div>
+                        </TableCell>
+                        <TableCell onClick={() => handleSort('Reported Date')} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <span>Reported Date</span>
+                                {getSortIcon('Reported Date')}
+                            </div>
+                        </TableCell>
+                        <TableCell onClick={() => handleSort('Status')} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <span>Status</span>
+                                {getSortIcon('Status')}
+                            </div>
+                        </TableCell>
+                        <TableCell onClick={() => handleSort('Severity')} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <span>Severity</span>
+                                {getSortIcon('Severity')}
+                            </div>
                         </TableCell>
                         <TableCell>Actions</TableCell>
                     </TableRow>
@@ -158,6 +193,7 @@ export default function BugTable() {
                             handleInputChange={handleInputChange}
                             setNewBug={setNewBug}
                             setShowAddFields={setShowAddFields}
+                            bugs={bugs}
                         />
                     )}
                 </TableBody>
