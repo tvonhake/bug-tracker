@@ -79,15 +79,15 @@ export default function BugTable() {
             const filtered = bugs.filter((bug) =>
                 bug.fields.Title && bug.fields.Title.toLowerCase().includes(value.toLowerCase())
             );
-            setSortedBugs(filtered);
+            handleSort(sortField, sortDirection, filtered);
         } else {
-            setSortedBugs(bugs);
+            handleSort(sortField, sortDirection, bugs);
         }
     };
 
     const handleClearSearch = () => {
         setSearch('');
-        setSortedBugs(bugs);
+        handleSort(sortField, sortDirection, bugs);
     };
 
     const handleSort = (field, direction = null, list = bugs) => {
