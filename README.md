@@ -2,6 +2,8 @@
 
 This is a Bug Tracking Application built using Next.js and Airtable. The application provides a scaled-down UI mimicking the "Bugs" panel grid view from a Bug Tracking System. It allows users to interact with Airtable to create, edit, view, and delete bug records.
 
+[View it live here!](https://bug-tracker-two.vercel.app/)
+
 ## Features
 - **View Bugs**: Display a grid view of bugs stored in Airtable.  
 - **Create Bugs**: Add new bug records to Airtable.  
@@ -45,11 +47,6 @@ This is a Bug Tracking Application built using Next.js and Airtable. The applica
     ```  
     Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-## Project Structure
-- **pages/**: Contains Next.js pages.  
-- **components/**: Reusable UI components.  
-- **utils/**: Helper functions and Airtable API integration.  
-
 ## Functionality
 1. **View Bugs**  
     The application fetches bug records from Airtable and displays them in a grid view.  
@@ -63,16 +60,6 @@ This is a Bug Tracking Application built using Next.js and Airtable. The applica
 4. **Delete Bugs**  
     Users can delete bug records, which will be removed from Airtable.  
 
-## Airtable Setup
-1. Create a new base in Airtable named **Bug Tracker**.  
-2. Add a table named **Bugs** with the following fields:  
-    - **Title** (Single line text)  
-    - **Description** (Long text)  
-    - **Priority** (Single select: Low, Medium, High)  
-    - **Status** (Single select: Open, In Progress, Closed)  
-    - **Created At** (Date)  
-3. Note the **Base ID** and **Table Name** for your Airtable base.
-
 ## Scripts
 - `npm run dev`: Start the development server.  
 - `npm run build`: Build the application for production.  
@@ -81,6 +68,9 @@ This is a Bug Tracking Application built using Next.js and Airtable. The applica
 
 ## Deployment
 I've deployed this app using Vercel, but it can be deployed using any other tool you prefer.
+
+## Notes
+To prevent going over time, I prioritized functionality: making sure that all CRUD operations can be performed, that search and sorting works, and that API calls work. To meet the time requirements I chose to forego complex styling and niceties like caching data across sessions.
 
 ## Learn More
 - [Next.js Documentation](https://nextjs.org/docs)  
