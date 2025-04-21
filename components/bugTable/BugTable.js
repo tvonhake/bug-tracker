@@ -8,19 +8,15 @@ import axios from 'axios';
 import BugTableRow from './BugTableRow';
 import AddBugRow from './AddBugRow';
 import SearchBar from './SearchBar';
-import FilterMenu from './FilterMenu';
 
 export default function BugTable() {
     const [bugs, setBugs] = useState([]);
-    const [filteredBugs, setFilteredBugs] = useState([]);
     const [sortedBugs, setSortedBugs] = useState([]);
     const [search, setSearch] = useState('');
     const [showAddFields, setShowAddFields] = useState(false);
     const [newBug, setNewBug] = useState({ Title: '', Status: '', Severity: '' });
     const [sortField, setSortField] = useState('Title');
     const [sortDirection, setSortDirection] = useState('asc');
-    const [filterStatus, setFilterStatus] = useState('');
-    const [filterSeverity, setFilterSeverity] = useState('');
 
     useEffect(() => {
         fetchBugs();
@@ -32,7 +28,6 @@ export default function BugTable() {
             const fetchedBugs = res.data.records;
 
             setBugs(fetchedBugs);
-            setFilteredBugs(fetchedBugs);
             setSortedBugs(fetchedBugs);
         } catch (err) {
             console.error('Error fetching bugs:', err);
@@ -45,7 +40,6 @@ export default function BugTable() {
             const res = await axios.post('/api/bugs', bugToAdd);
             const updatedBugs = [...bugs, res.data.record];
             setBugs(updatedBugs);
-            setFilteredBugs(updatedBugs);
             setSortedBugs(updatedBugs);
         } catch (err) {
             console.error('Error adding bug:', err);
@@ -61,7 +55,6 @@ export default function BugTable() {
             const res = await axios.patch(`/api/bugs/${id}`, { fields: updatedBug.fields });
             const updatedBugs = bugs.map((bug) => (bug.id === id ? res.data.record : bug));
             setBugs(updatedBugs);
-            setFilteredBugs(updatedBugs);
             setSortedBugs(updatedBugs);
         } catch (err) {
             console.error('Error editing bug:', err);
@@ -73,7 +66,6 @@ export default function BugTable() {
             const updatedBugs = bugs.filter((bug) => bug.id !== id);
             await axios.delete(`/api/bugs/${id}`);
             setBugs(updatedBugs);
-            setFilteredBugs(updatedBugs);
             setSortedBugs(updatedBugs);
         } catch (err) {
             console.error('Error deleting bug:', err);
@@ -87,17 +79,14 @@ export default function BugTable() {
             const filtered = bugs.filter((bug) =>
                 bug.fields.Title && bug.fields.Title.toLowerCase().includes(value.toLowerCase())
             );
-            setFilteredBugs(filtered);
             setSortedBugs(filtered);
         } else {
-            setFilteredBugs(bugs);
             setSortedBugs(bugs);
         }
     };
 
     const handleClearSearch = () => {
         setSearch('');
-        setFilteredBugs(bugs);
         setSortedBugs(bugs);
     };
 
@@ -108,7 +97,7 @@ export default function BugTable() {
 
         const severityOrder = ['Low', 'Medium', 'High', 'Critical'];
 
-        const sorted = [...filteredBugs].sort((a, b) => {
+        const sorted = [...bugs].sort((a, b) => {
             if (field === 'Severity') {
                 const aIndex = severityOrder.indexOf(a.fields.Severity);
                 const bIndex = severityOrder.indexOf(b.fields.Severity);
@@ -130,42 +119,12 @@ export default function BugTable() {
         return null;
     };
 
-    const handleFilter = (status, severity) => {
-        let filtered = [...bugs];
-
-        if (status) {
-            filtered = filtered.filter((bug) => bug.fields.Status === status);
-        }
-
-        if (severity) {
-            filtered = filtered.filter((bug) => bug.fields.Severity === severity);
-        }
-
-        setFilteredBugs(filtered);
-        setSortedBugs(filtered);
-    };
-
-    const handleClearFilters = () => {
-        setFilterStatus('');
-        setFilterSeverity('');
-        setFilteredBugs(bugs);
-        setSortedBugs(bugs);
-    };
-
     return (
         <>
             <SearchBar
                 search={search}
                 handleSearch={handleSearch}
                 handleClearSearch={handleClearSearch}
-            />
-            <FilterMenu
-                filterStatus={filterStatus}
-                filterSeverity={filterSeverity}
-                setFilterStatus={setFilterStatus}
-                setFilterSeverity={setFilterSeverity}
-                handleFilter={() => handleFilter(filterStatus, filterSeverity)}
-                handleClearFilters={handleClearFilters}
             />
             <Typography variant="h5" gutterBottom>Bugs</Typography>
             <Table>
