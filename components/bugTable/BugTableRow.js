@@ -60,8 +60,31 @@ export default function BugTableRow({ bug, onEdit, onDelete }) {
                     <>
                         <TableCell>
                             <TextField
+                                value={editedBug['Bug ID']}
+                                disabled
+                                fullWidth
+                            />
+                        </TableCell>
+                        <TableCell>
+                            <TextField
                                 value={editedBug.Title}
                                 onChange={(e) => handleInputChange('Title', e.target.value)}
+                                fullWidth
+                            />
+                        </TableCell>
+                        <TableCell>
+                            <TextField
+                                value={editedBug.Description}
+                                onChange={(e) => handleInputChange('Description', e.target.value)}
+                                fullWidth
+                                multiline
+                            />
+                        </TableCell>
+                        <TableCell>
+                            <TextField
+                                type="date"
+                                value={editedBug['Reported Date']}
+                                onChange={(e) => handleInputChange('Reported Date', e.target.value)}
                                 fullWidth
                             />
                         </TableCell>
@@ -92,7 +115,10 @@ export default function BugTableRow({ bug, onEdit, onDelete }) {
                     </>
                 ) : (
                     <>
+                        <TableCell>{bug.fields['Bug ID']}</TableCell>
                         <TableCell>{bug.fields.Title}</TableCell>
+                        <TableCell>{bug.fields.Description}</TableCell>
+                        <TableCell>{bug.fields['Reported Date']}</TableCell>
                         <TableCell>{bug.fields.Status}</TableCell>
                         <TableCell>{bug.fields.Severity}</TableCell>
                     </>

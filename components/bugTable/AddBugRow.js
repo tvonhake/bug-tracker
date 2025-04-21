@@ -1,18 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TableRow, TableCell, IconButton, TextField, Select, MenuItem } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
-export default function AddBugRow({ onAdd, newBug, handleInputChange, setNewBug, setShowAddFields }) {
+export default function AddBugRow({ onAdd, newBug, handleInputChange, setNewBug, setShowAddFields, bugs }) {
+    const [nextBugId, setNextBugId] = useState('');
+
+    useEffect(() => {
+        if (bugs.length > 0) {
+            const highestBugId = bugs.reduce((max, bug) => {
+                const bugIdNumber = parseInt(bug.fields['Bug ID'].replace('BUG-', ''), 10);
+                return bugIdNumber > max ? bugIdNumber : max;
+            }, 0);
+
+            const newIdNumber = highestBugId + 1;
+            setNextBugId(`BUG-${String(newIdNumber).padStart(3, '0')}`);
+        } else {
+            setNextBugId('BUG-001');
+        }
+    }, [bugs]);
+
     return (
         <>
-            <TableRow>
+            <TableRow sx={{ height: '56px' }}>
+                <TableCell>
+                    {nextBugId}
+                </TableCell>
                 <TableCell>
                     <TextField
                         placeholder="New Title"
                         value={newBug.Title}
                         onChange={(e) => handleInputChange('Title', e.target.value)}
                         fullWidth
+                        variant="standard"
+                    />
+                </TableCell>
+                <TableCell>
+                    <TextField
+                        placeholder="New Description"
+                        value={newBug.Description}
+                        onChange={(e) => handleInputChange('Description', e.target.value)}
+                        fullWidth
+                        multiline
+                        variant="standard"
+                    />
+                </TableCell>
+                <TableCell>
+                    <TextField
+                        type="date"
+                        value={newBug['Reported Date'] || ''}
+                        onChange={(e) => handleInputChange('Reported Date', e.target.value)}
+                        fullWidth
+                        variant="standard"
                     />
                 </TableCell>
                 <TableCell>
@@ -21,6 +60,7 @@ export default function AddBugRow({ onAdd, newBug, handleInputChange, setNewBug,
                         onChange={(e) => handleInputChange('Status', e.target.value)}
                         fullWidth
                         displayEmpty
+                        variant="standard"
                     >
                         <MenuItem value="" disabled>
                             Select Status
@@ -37,6 +77,7 @@ export default function AddBugRow({ onAdd, newBug, handleInputChange, setNewBug,
                         onChange={(e) => handleInputChange('Severity', e.target.value)}
                         fullWidth
                         displayEmpty
+                        variant="standard"
                     >
                         <MenuItem value="" disabled>
                             Select Severity
@@ -50,8 +91,12 @@ export default function AddBugRow({ onAdd, newBug, handleInputChange, setNewBug,
                 <TableCell>
                     <IconButton
                         onClick={async () => {
-                            await onAdd(newBug);
-                            setNewBug({ Title: '', Status: '', Severity: '' });
+                            const updatedBug = { ...newBug, 'Bug ID': nextBugId };
+                            console.log('Updated newBug with Bug ID:', updatedBug);
+
+                            await onAdd(updatedBug);
+
+                            setNewBug({ 'Bug ID': '', Title: '', Description: '', 'Reported Date': '', Status: '', Severity: '' });
                             setShowAddFields(false);
                         }}
                     >
@@ -59,7 +104,7 @@ export default function AddBugRow({ onAdd, newBug, handleInputChange, setNewBug,
                     </IconButton>
                     <IconButton
                         onClick={() => {
-                            setNewBug({ Title: '', Status: '', Severity: '' });
+                            setNewBug({ 'Bug ID': nextBugId, Title: '', Description: '', 'Reported Date': '', Status: '', Severity: '' });
                             setShowAddFields(false);
                         }}
                     >
