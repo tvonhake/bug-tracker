@@ -8,6 +8,7 @@ import axios from 'axios';
 import BugTableRow from './BugTableRow';
 import AddBugRow from './AddBugRow';
 import SearchBar from './SearchBar';
+import BugModal from './BugModal';
 
 export default function BugTable() {
     const [bugs, setBugs] = useState([]);
@@ -17,6 +18,8 @@ export default function BugTable() {
     const [newBug, setNewBug] = useState({ 'Bug ID': '', Title: '', Description: '', 'Reported Date': '', Status: '', Severity: '' });
     const [sortField, setSortField] = useState('Bug ID');
     const [sortDirection, setSortDirection] = useState('asc');
+    const [selectedBug, setSelectedBug] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         fetchBugs();
@@ -128,6 +131,16 @@ export default function BugTable() {
         return null;
     };
 
+    const handleOpenModal = (bug) => {
+        setSelectedBug(bug);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedBug(null);
+        setIsModalOpen(false);
+    };
+
     return (
         <>
             <SearchBar
@@ -185,6 +198,7 @@ export default function BugTable() {
                             key={bug.id}
                             onEdit={(updatedBug) => handleEdit(bug.id, updatedBug)}
                             onDelete={() => handleDelete(bug.id)}
+                            onRowClick={() => handleOpenModal(bug)}
                         />
                     ))}
                     {showAddFields && (
@@ -203,6 +217,16 @@ export default function BugTable() {
             <IconButton onClick={() => setShowAddFields(!showAddFields)} style={{ marginTop: '16px' }}>
                 {showAddFields ? <CloseIcon /> : <AddIcon />}
             </IconButton>
+
+            {selectedBug && (
+                <BugModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    bug={selectedBug}
+                    onEdit={(updatedBug) => handleEdit(selectedBug.id, updatedBug)}
+                    onDelete={(bugId) => handleDelete(bugId)}
+                />
+            )}
         </>
     );
 }
